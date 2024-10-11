@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1385</width>
+    <width>1264</width>
     <height>587</height>
    </rect>
   </property>
@@ -17,8 +17,8 @@
    <widget class="QTableWidget" name="tableWidget">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>30</y>
+      <x>90</x>
+      <y>40</y>
       <width>501</width>
       <height>461</height>
      </rect>
@@ -27,8 +27,8 @@
    <widget class="QTableWidget" name="tableWidget_2">
     <property name="geometry">
      <rect>
-      <x>550</x>
-      <y>30</y>
+      <x>620</x>
+      <y>40</y>
       <width>511</width>
       <height>461</height>
      </rect>
@@ -37,8 +37,8 @@
    <widget class="QGraphicsView" name="graphicsView">
     <property name="geometry">
      <rect>
-      <x>35</x>
-      <y>131</y>
+      <x>105</x>
+      <y>141</y>
       <width>471</width>
       <height>341</height>
      </rect>
@@ -47,8 +47,8 @@
    <widget class="QGraphicsView" name="graphicsView_2">
     <property name="geometry">
      <rect>
-      <x>570</x>
-      <y>130</y>
+      <x>640</x>
+      <y>140</y>
       <width>471</width>
       <height>341</height>
      </rect>
@@ -57,8 +57,8 @@
    <widget class="QTextEdit" name="textEdit">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>90</y>
+      <x>220</x>
+      <y>70</y>
       <width>261</width>
       <height>41</height>
      </rect>
@@ -74,8 +74,8 @@ p, li { white-space: pre-wrap; }
    <widget class="QTextEdit" name="textEdit_2">
     <property name="geometry">
      <rect>
-      <x>620</x>
-      <y>90</y>
+      <x>690</x>
+      <y>70</y>
       <width>411</width>
       <height>41</height>
      </rect>
@@ -94,7 +94,7 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1385</width>
+     <width>1264</width>
      <height>31</height>
     </rect>
    </property>
@@ -263,13 +263,6 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionClearOutput"/>
     <addaction name="actionClearAll"/>
    </widget>
-   <widget class="QMenu" name="menuKonvolusi">
-    <property name="title">
-     <string>Convolution</string>
-    </property>
-    <addaction name="actionManual"/>
-    <addaction name="actionOpenCV"/>
-   </widget>
    <widget class="QMenu" name="menuExtraction">
     <property name="title">
      <string>Extraction</string>
@@ -287,24 +280,23 @@ p, li { white-space: pre-wrap; }
    <addaction name="menuFilter"/>
    <addaction name="menuSegmentation"/>
    <addaction name="menuMorfologi"/>
-   <addaction name="menuKonvolusi"/>
    <addaction name="menuExtraction"/>
    <addaction name="menuClear"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionBuka">
    <property name="text">
-    <string>Buka</string>
+    <string>Open</string>
    </property>
   </action>
   <action name="actionSimpan_Sebagai">
    <property name="text">
-    <string>Simpan Sebagai....</string>
+    <string>Save As...</string>
    </property>
   </action>
   <action name="actionKeluar">
    <property name="text">
-    <string>Keluar</string>
+    <string>Exit</string>
    </property>
   </action>
   <action name="actionInput">
@@ -654,7 +646,7 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionTentang_Aplikasi">
    <property name="text">
-    <string>Tentang Aplikasi</string>
+    <string>About App</string>
    </property>
   </action>
  </widget>

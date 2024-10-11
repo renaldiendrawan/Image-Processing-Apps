@@ -9,13 +9,15 @@ import skimage.feature as skft
 import pandas as pd
 import os
 from arithmetical import MyWindow as ArithmeticalWindow
+# from skimage.feature import greycomatrix, greycoprops
+import mahotas as mt
 
 class MyWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MyWindow, self).__init__()
 
         # Load UI from .ui file
-        uic.loadUi("ProjectPythonUts.ui", self)
+        uic.loadUi("main.ui", self)
 
         # Find widgets
         self.graphicsView = self.findChild(QtWidgets.QGraphicsView, 'graphicsView')
@@ -78,9 +80,6 @@ class MyWindow(QtWidgets.QMainWindow):
         self.actionWatershed_segmentation = self.findChild(QtWidgets.QAction, 'actionWatershed_segmentation')
         self.actionGlobal_thresholding = self.findChild(QtWidgets.QAction, 'actionGlobal_thresholding')
         self.actionAdaptive_thresholding = self.findChild(QtWidgets.QAction, 'actionAdaptive_thresholding')
-        
-        self.actionManual = self.findChild(QtWidgets.QAction, 'actionManual')
-        self.actionOpenCV = self.findChild(QtWidgets.QAction, 'actionOpenCV')
         
         self.actionCitraWarnaRGB = self.findChild(QtWidgets.QAction, 'actionCitraWarnaRGB')
         self.actionTeksturdenganGLCM = self.findChild(QtWidgets.QAction, 'actionTeksturdenganGLCM')
@@ -162,9 +161,6 @@ class MyWindow(QtWidgets.QMainWindow):
         self.actionWatershed_segmentation.triggered.connect(self.watershed_segmentation)
         self.actionGlobal_thresholding.triggered.connect(self.global_thresholding)
         self.actionAdaptive_thresholding.triggered.connect(self.adaptive_thresholding)
-        
-        self.actionManual.triggered.connect(self.manual_convolution)
-        self.actionOpenCV.triggered.connect(self.opencv_convolution)
         
         self.actionCitraWarnaRGB.triggered.connect(self.citra_warna_rgb)
         self.actionTeksturdenganGLCM.triggered.connect(self.tekstur_dengan_glcm)
@@ -1087,92 +1083,8 @@ class MyWindow(QtWidgets.QMainWindow):
         else:
             QtWidgets.QMessageBox.warning(self, "Warning", "Please open or process an image first.")
             
-    def manual_convolution(self):
-        if self.processed_image is not None:
-            try:
-                # Cek apakah gambar sudah dalam format grayscale atau BGR
-                if len(self.processed_image.shape) == 3:  # Jika gambar memiliki 3 channel (BGR)
-                    gray = cv2.cvtColor(self.processed_image, cv2.COLOR_BGR2GRAY)
-                else:
-                    gray = self.processed_image  # Jika sudah grayscale
-
-                # Kernel rata-rata (Average filter) 3x3
-                kernel = np.array([
-                    [1/9, 1/9, 1/9],
-                    [1/9, 1/9, 1/9],
-                    [1/9, 1/9, 1/9]
-                ])
-
-                # Dimensi citra
-                image_height, image_width = gray.shape
-                kernel_height, kernel_width = kernel.shape
-
-                # Padding untuk mengatasi piksel di tepi
-                pad_h = kernel_height // 2
-                pad_w = kernel_width // 2
-                padded_image = np.pad(gray, ((pad_h, pad_h), (pad_w, pad_w)), mode='constant', constant_values=0)
-
-                # Inisialisasi output array
-                output = np.zeros_like(gray)
-
-                # Konvolusi manual
-                for i in range(image_height):
-                    for j in range(image_width):
-                        window = padded_image[i:i + kernel_height, j:j + kernel_width]
-                        output[i, j] = np.sum(window * kernel)
-
-                # Tampilkan citra asli di graphicsView
-                if self.graphicsView is not None:
-                    self.display_image_in_view(gray, self.graphicsView)  # Menampilkan citra asli
-
-                # Tampilkan hasil konvolusi di graphicsView_2 jika ada, atau di graphicsView jika tidak ada graphicsView_2
-                if self.graphicsView_2 is not None:
-                    self.display_image_in_view(output, self.graphicsView_2)  # Menampilkan hasil konvolusi manual
-                else:
-                    self.display_image_in_view(output, self.graphicsView)  # Menampilkan hasil konvolusi manual jika hanya ada satu view
-
-            except Exception as e:
-                print(f"Error in manual_convolution: {e}")
-                QtWidgets.QMessageBox.warning(self, "Error", f"Manual convolution failed: {e}")
-        else:
-            QtWidgets.QMessageBox.warning(self, "Warning", "Please open or process an image first.")
-
-    def opencv_convolution(self):
-        if self.processed_image is not None:
-            try:
-                # Cek apakah gambar sudah dalam format grayscale atau BGR
-                if len(self.processed_image.shape) == 3:  # Jika gambar memiliki 3 channel (BGR)
-                    gray = cv2.cvtColor(self.processed_image, cv2.COLOR_BGR2GRAY)
-                else:
-                    gray = self.processed_image  # Jika sudah grayscale
-
-                # Kernel rata-rata (Average filter) 3x3
-                kernel = np.ones((3, 3), np.float32) / 9
-
-                # Lakukan konvolusi menggunakan OpenCV
-                output = cv2.filter2D(gray, -1, kernel)
-
-                # Tampilkan citra asli di graphicsView
-                if self.graphicsView is not None:
-                    self.display_image_in_view(gray, self.graphicsView)  # Menampilkan citra asli
-
-                # Tampilkan hasil konvolusi di graphicsView_2 jika ada, atau di graphicsView jika tidak ada graphicsView_2
-                if self.graphicsView_2 is not None:
-                    self.display_image_in_view(output, self.graphicsView_2)  # Menampilkan hasil konvolusi dengan OpenCV
-                else:
-                    self.display_image_in_view(output, self.graphicsView)  # Menampilkan hasil konvolusi di graphicsView jika hanya satu view
-
-            except cv2.error as e:
-                print(f"OpenCV Error in opencv_convolution: {e}")
-                QtWidgets.QMessageBox.warning(self, "Error", f"OpenCV convolution failed: {e}")
-
-            except Exception as e:
-                print(f"Error in opencv_convolution: {e}")
-                QtWidgets.QMessageBox.warning(self, "Error", f"OpenCV convolution failed: {e}")
-        else:
-            QtWidgets.QMessageBox.warning(self, "Warning", "Please open or process an image first.")
-            
     def citra_warna_rgb(self):
+        # Cek apakah gambar telah diproses dan tampil di graphicsView
         if self.processed_image is not None:
             try:
                 # Cek apakah gambar memiliki 3 channel (RGB/BGR)
@@ -1180,19 +1092,12 @@ class MyWindow(QtWidgets.QMainWindow):
                     # Pisahkan channel R, G, B
                     blue, green, red = cv2.split(self.processed_image)
 
-                    # Tampilkan citra inputan asli di graphicsView
-                    self.display_image_in_view(self.processed_image, self.graphicsView)
-
                     # Hitung intensitas rata-rata masing-masing channel
                     red_mean = np.mean(red)
                     green_mean = np.mean(green)
                     blue_mean = np.mean(blue)
 
-                    # Buat pop-up untuk menampilkan informasi intensitas rata-rata masing-masing channel
-                    rgb_info = f"Red Channel Mean: {red_mean:.2f}\nGreen Channel Mean: {green_mean:.2f}\nBlue Channel Mean: {blue_mean:.2f}"
-                    QtWidgets.QMessageBox.information(self, "RGB Channel Information", rgb_info)
-
-                    # Simpan hasil ke Excel
+                    # Siapkan data untuk ditulis
                     data_rgb = {'Channel': ['Red', 'Green', 'Blue'],
                                 'Mean Intensity': [red_mean, green_mean, blue_mean]}
                     df_rgb = pd.DataFrame(data_rgb)
@@ -1200,10 +1105,22 @@ class MyWindow(QtWidgets.QMainWindow):
                     # Tentukan folder penyimpanan
                     folder = "hasil_rgb_glcm"
                     os.makedirs(folder, exist_ok=True)  # Buat folder jika belum ada
+
+                    # Nama file Excel
                     file_path = os.path.join(folder, "rgb_analysis.xlsx")
 
-                    # Simpan DataFrame ke file Excel
-                    df_rgb.to_excel(file_path, index=False)
+                    # Cek apakah file sudah ada
+                    if os.path.exists(file_path):
+                        # Jika file sudah ada, tambahkan data ke sheet yang sudah ada
+                        with pd.ExcelWriter(file_path, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+                            # Cari posisi baris terakhir dan tambahkan di bawahnya
+                            df_rgb.to_excel(writer, sheet_name='RGB Analysis', index=False, header=False, startrow=writer.sheets['RGB Analysis'].max_row)
+                    else:
+                        # Jika file belum ada, buat file baru dan tulis data
+                        with pd.ExcelWriter(file_path, engine='openpyxl') as writer:
+                            df_rgb.to_excel(writer, sheet_name='RGB Analysis', index=False)
+
+                    # Tampilkan pesan peringatan jika hasil telah disimpan
                     QtWidgets.QMessageBox.information(self, "Save Successful", f"RGB analysis saved to {file_path}")
 
                 else:
@@ -1213,57 +1130,62 @@ class MyWindow(QtWidgets.QMainWindow):
                 print(f"Error in extract_rgb_channels: {e}")
                 QtWidgets.QMessageBox.warning(self, "Error", f"RGB channel extraction failed: {e}")
         else:
+            # Jika tidak ada gambar yang ditampilkan di graphicsView
             QtWidgets.QMessageBox.warning(self, "Warning", "Please open or process an image first.")
 
     def tekstur_dengan_glcm(self):
+        # Cek apakah gambar telah diproses dan tampil di graphicsView
         if self.processed_image is not None:
             try:
-                # Cek apakah gambar sudah grayscale
+                # Konversi gambar ke grayscale jika belum grayscale
                 if len(self.processed_image.shape) == 3:
-                    gray = cv2.cvtColor(self.processed_image, cv2.COLOR_BGR2GRAY)
+                    img_gray = cv2.cvtColor(self.processed_image, cv2.COLOR_BGR2GRAY)
                 else:
-                    gray = self.processed_image
+                    img_gray = self.processed_image  # Gambar sudah grayscale
 
-                # Tampilkan citra grayscale di graphicsView
-                self.display_image_in_view(gray, self.graphicsView)
+                # Fungsi untuk menghitung fitur GLCM dengan Mahotas
+                def extract_glcm_features(image_gray):
+                    glcm = mt.features.haralick(image_gray).mean(axis=0)
+                    contrast = glcm[1]  # Contrast
+                    homogeneity = glcm[4]  # Homogeneity
+                    energy = glcm[8]  # Energy
+                    correlation = glcm[2]  # Correlation
+                    return contrast, homogeneity, energy, correlation
 
-                # Menghitung GLCM (Gray Level Co-occurrence Matrix)
-                glcm = skft.greycomatrix(gray, distances=[1], angles=[0], levels=256, symmetric=True, normed=True)
+                # Ekstraksi fitur GLCM
+                contrast, homogeneity, energy, correlation = extract_glcm_features(img_gray)
 
-                # Ekstraksi fitur GLCM (contrast, dissimilarity, homogeneity, energy, correlation)
-                contrast = skft.greycoprops(glcm, 'contrast')[0, 0]
-                dissimilarity = skft.greycoprops(glcm, 'dissimilarity')[0, 0]
-                homogeneity = skft.greycoprops(glcm, 'homogeneity')[0, 0]
-                energy = skft.greycoprops(glcm, 'energy')[0, 0]
-                correlation = skft.greycoprops(glcm, 'correlation')[0, 0]
+                # Tentukan folder output (hasil_rgb_glcm)
+                output_folder = 'hasil_rgb_glcm'
+                os.makedirs(output_folder, exist_ok=True)  # Buat folder jika belum ada
 
-                # Menampilkan hasil GLCM di pop-up
-                glcm_info = (f"GLCM Features:\n\n"
-                            f"Contrast: {contrast:.2f}\n"
-                            f"Dissimilarity: {dissimilarity:.2f}\n"
-                            f"Homogeneity: {homogeneity:.2f}\n"
-                            f"Energy: {energy:.2f}\n"
-                            f"Correlation: {correlation:.2f}")
-                QtWidgets.QMessageBox.information(self, "GLCM Texture Analysis", glcm_info)
+                # Tentukan path file output (glcm_analysis.xlsx)
+                output_path = os.path.join(output_folder, 'glcm_analysis.xlsx')
 
-                # Simpan hasil ke Excel
-                data_glcm = {'Feature': ['Contrast', 'Dissimilarity', 'Homogeneity', 'Energy', 'Correlation'],
-                            'Value': [contrast, dissimilarity, homogeneity, energy, correlation]}
-                df_glcm = pd.DataFrame(data_glcm)
+                # Buat dataframe untuk hasil ekstraksi
+                new_data = pd.DataFrame([['Processed Image', contrast, homogeneity, energy, correlation]], 
+                                        columns=['Nama', 'Kontras', 'Homogenitas', 'Energi', 'Korelasi'])
 
-                # Tentukan folder penyimpanan
-                folder = "hasil_rgb_glcm"
-                os.makedirs(folder, exist_ok=True)  # Buat folder jika belum ada
-                file_path = os.path.join(folder, "glcm_analysis.xlsx")
+                # Cek apakah file Excel sudah ada
+                if os.path.exists(output_path):
+                    # Jika file ada, tambahkan data di bawahnya
+                    with pd.ExcelWriter(output_path, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+                        new_data.to_excel(writer, sheet_name='GLCM Features', index=False, header=False, 
+                                        startrow=writer.sheets['GLCM Features'].max_row)
+                else:
+                    # Jika file belum ada, buat file baru
+                    with pd.ExcelWriter(output_path, engine='openpyxl') as writer:
+                        new_data.to_excel(writer, sheet_name='GLCM Features', index=False)
 
-                # Simpan DataFrame ke file Excel
-                df_glcm.to_excel(file_path, index=False)
-                QtWidgets.QMessageBox.information(self, "Save Successful", f"GLCM analysis saved to {file_path}")
+                # Tampilkan pesan sukses
+                QtWidgets.QMessageBox.information(self, "Save Successful", f"GLCM analysis saved to {output_path}")
 
             except Exception as e:
-                print(f"Error in extract_texture_glcm: {e}")
-                QtWidgets.QMessageBox.warning(self, "Error", f"GLCM extraction failed: {e}")
+                # Tangani error dan tampilkan pesan
+                print(f"Error in extract_glcm_features: {e}")
+                QtWidgets.QMessageBox.warning(self, "Error", f"GLCM feature extraction failed: {e}")
         else:
+            # Jika tidak ada gambar yang ditampilkan di graphicsView
             QtWidgets.QMessageBox.warning(self, "Warning", "Please open or process an image first.")
             
     def clear_output(self):
