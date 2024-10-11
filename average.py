@@ -5,6 +5,10 @@ import numpy as np
 import cv2
 import sys
 import matplotlib.pyplot as plt
+import skimage.feature as skft
+import pandas as pd
+import os
+from arithmetical import MyWindow as ArithmeticalWindow
 
 class MyWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -47,9 +51,18 @@ class MyWindow(QtWidgets.QMainWindow):
         self.actionZoom_Image = self.findChild(QtWidgets.QAction, 'actionZoom_Image')
         self.actionCrop_Image = self.findChild(QtWidgets.QAction, 'actionCrop_Image')
         
+        self.actionIdentity = self.findChild(QtWidgets.QAction, 'actionIdentity')
         self.actionSobel = self.findChild(QtWidgets.QAction, 'actionSobel')
         self.actionPrewitt = self.findChild(QtWidgets.QAction, 'actionPrewitt')
         self.actionCanny = self.findChild(QtWidgets.QAction, 'actionCanny')
+        self.actionSharpen = self.findChild(QtWidgets.QAction, 'actionSharpen')
+        self.actionGaussian_Blur_3x3 = self.findChild(QtWidgets.QAction, 'actionGaussian_Blur_3x3')
+        self.actionGaussian_Blur_5x5 = self.findChild(QtWidgets.QAction, 'actionGaussian_Blur_5x5')
+        self.actionUnsharp_Masking = self.findChild(QtWidgets.QAction, 'actionUnsharp_Masking')
+        self.actionAverage_Filter = self.findChild(QtWidgets.QAction, 'actionAverage_Filter')
+        self.actionLow_Pass_Filter = self.findChild(QtWidgets.QAction, 'actionLow_Pass_Filter')
+        self.actionHeigh_Pass_Filter = self.findChild(QtWidgets.QAction, 'actionHeigh_Pass_Filter')
+        self.actionBandstop_Filter = self.findChild(QtWidgets.QAction, 'actionBandstop_Filter')
         
         self.actionErosion = self.findChild(QtWidgets.QAction, 'actionErosion')
         self.actionDilation = self.findChild(QtWidgets.QAction, 'actionDilation')
@@ -69,6 +82,9 @@ class MyWindow(QtWidgets.QMainWindow):
         self.actionManual = self.findChild(QtWidgets.QAction, 'actionManual')
         self.actionOpenCV = self.findChild(QtWidgets.QAction, 'actionOpenCV')
         
+        self.actionCitraWarnaRGB = self.findChild(QtWidgets.QAction, 'actionCitraWarnaRGB')
+        self.actionTeksturdenganGLCM = self.findChild(QtWidgets.QAction, 'actionTeksturdenganGLCM')
+        
         self.actionClearOutput = self.findChild(QtWidgets.QAction, 'actionClearOutput')
         self.actionClearAll = self.findChild(QtWidgets.QAction, 'actionClearAll')
 
@@ -76,6 +92,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.actionInputHistogram = self.findChild(QtWidgets.QAction, 'actionInput')
         self.actionOutputHistogram = self.findChild(QtWidgets.QAction, 'actionOutput')
         self.actionInputOutputHistogram = self.findChild(QtWidgets.QAction, 'actionInput_Output')
+        self.actionArithmetical_Operation = self.findChild(QtWidgets.QAction, 'actionArithmetical_Operation')
 
         # Find bit depth actions
         self.action1_Bit = self.findChild(QtWidgets.QAction, 'action1_Bit')
@@ -118,9 +135,18 @@ class MyWindow(QtWidgets.QMainWindow):
         self.actionZoom_Image.triggered.connect(self.zoom_image)
         self.actionCrop_Image.triggered.connect(self.crop_image)
         
+        self.actionIdentity.triggered.connect(self.identity)
         self.actionSobel.triggered.connect(self.sobel)
         self.actionPrewitt.triggered.connect(self.prewitt)
         self.actionCanny.triggered.connect(self.canny)
+        self.actionSharpen.triggered.connect(self.sharpen)
+        self.actionGaussian_Blur_3x3.triggered.connect(self.gaussian_blur_3x3)
+        self.actionGaussian_Blur_5x5.triggered.connect(self.gaussian_blur_5x5)
+        self.actionUnsharp_Masking.triggered.connect(self.unsharp_masking)
+        self.actionAverage_Filter.triggered.connect(self.average_filter)
+        self.actionLow_Pass_Filter.triggered.connect(self.low_pass_filter)
+        self.actionHeigh_Pass_Filter.triggered.connect(self.heigh_pass_filter)
+        self.actionBandstop_Filter.triggered.connect(self.bandstop_filter)
         
         self.actionErosion.triggered.connect(self.erosion)
         self.actionDilation.triggered.connect(self.dilation)
@@ -140,6 +166,9 @@ class MyWindow(QtWidgets.QMainWindow):
         self.actionManual.triggered.connect(self.manual_convolution)
         self.actionOpenCV.triggered.connect(self.opencv_convolution)
         
+        self.actionCitraWarnaRGB.triggered.connect(self.citra_warna_rgb)
+        self.actionTeksturdenganGLCM.triggered.connect(self.tekstur_dengan_glcm)
+        
         self.actionClearOutput.triggered.connect(self.clear_output)
         self.actionClearAll.triggered.connect(self.clear_all)
 
@@ -147,6 +176,7 @@ class MyWindow(QtWidgets.QMainWindow):
         self.actionInputHistogram.triggered.connect(self.show_input_histogram)
         self.actionOutputHistogram.triggered.connect(self.show_output_histogram)
         self.actionInputOutputHistogram.triggered.connect(self.show_input_output_histogram)
+        self.actionArithmetical_Operation.triggered.connect(self.show_arithmetical_dialog)
 
         # Connect bit depth actions to function
         self.action1_Bit.triggered.connect(lambda: self.set_bit_depth(1))
@@ -655,6 +685,125 @@ class MyWindow(QtWidgets.QMainWindow):
         else:
             QtWidgets.QMessageBox.warning(self, "Warning", "Please open an image first.")
             
+    def apply_filter(self, kernel):
+        if self.image is not None:
+            try:
+                # Terapkan filter dengan konvolusi
+                filtered_image = cv2.filter2D(self.image, -1, kernel)
+                
+                # Tampilkan hasil filter
+                self.display_image_in_view(filtered_image)
+
+                # Simpan hasil ke self.processed_image
+                self.processed_image = filtered_image
+            except Exception as e:
+                QtWidgets.QMessageBox.warning(self, "Warning", "An error occurred while applying the filter.")
+                print(f"Error in apply_filter: {e}")
+        else:
+            QtWidgets.QMessageBox.warning(self, "Warning", "Please open an image first.")
+
+    def identity(self):
+        identity_kernel = np.array([[0, 0, 0],
+                                    [0, 1, 0],
+                                    [0, 0, 0]])
+        self.apply_filter(identity_kernel)
+
+    def sharpen(self):
+        sharpen_kernel = np.array([[0, -1, 0],
+                                   [-1, 5, -1],
+                                   [0, -1, 0]])
+        self.apply_filter(sharpen_kernel)
+
+    def gaussian_blur_3x3(self):
+        gaussian_blur_3x3_kernel = cv2.getGaussianKernel(3, 0)
+        gaussian_blur_3x3 = np.outer(gaussian_blur_3x3_kernel, gaussian_blur_3x3_kernel)
+        self.apply_filter(gaussian_blur_3x3)
+
+    def gaussian_blur_5x5(self):
+        gaussian_blur_5x5_kernel = cv2.getGaussianKernel(5, 0)
+        gaussian_blur_5x5 = np.outer(gaussian_blur_5x5_kernel, gaussian_blur_5x5_kernel)
+        self.apply_filter(gaussian_blur_5x5)
+
+    def unsharp_masking(self):
+        if self.image is not None:
+            try:
+                # Convert to grayscale
+                gray_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+                
+                # Gaussian Blur
+                blurred_image = cv2.GaussianBlur(gray_image, (5, 5), 1.5)
+                
+                # Unsharp Masking
+                unsharp_image = cv2.addWeighted(gray_image, 1.5, blurred_image, -0.5, 0)
+                
+                # Display the result
+                self.display_image_in_view(unsharp_image)
+
+                # Save result to self.processed_image
+                self.processed_image = unsharp_image
+            except Exception as e:
+                QtWidgets.QMessageBox.warning(self, "Warning", "An error occurred during unsharp masking.")
+                print(f"Error in unsharp_masking: {e}")
+        else:
+            QtWidgets.QMessageBox.warning(self, "Warning", "Please open an image first.")
+
+    def average_filter(self):
+        average_kernel = np.ones((3, 3), np.float32) / 9
+        self.apply_filter(average_kernel)
+
+    def low_pass_filter(self):
+        low_pass_kernel = np.ones((5, 5), np.float32) / 25
+        self.apply_filter(low_pass_kernel)
+
+    def heigh_pass_filter(self):
+        high_pass_kernel = np.array([[-1, -1, -1],
+                                    [-1,  8, -1],
+                                    [-1, -1, -1]])
+        self.apply_filter(high_pass_kernel)
+
+    def bandstop_filter(self):
+        if self.image is not None:
+            try:
+                # Konversi gambar ke grayscale
+                gray_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+
+                # Transformasi Fourier
+                dft = cv2.dft(np.float32(gray_image), flags=cv2.DFT_COMPLEX_OUTPUT)
+                dft_shift = np.fft.fftshift(dft)
+
+                rows, cols = gray_image.shape
+                crow, ccol = rows // 2, cols // 2
+
+                # Membuat masker bandstop
+                mask = np.ones((rows, cols, 2), np.uint8)
+                r_out = 60  # Radius luar untuk stop band
+                r_in = 30  # Radius dalam untuk stop band
+                cv2.circle(mask, (ccol, crow), r_out, 0, thickness=-1)
+                cv2.circle(mask, (ccol, crow), r_in, 1, thickness=-1)
+
+                # Terapkan masker ke hasil DFT
+                fshift = dft_shift * mask
+
+                # Transformasi balik (Inverse FFT)
+                f_ishift = np.fft.ifftshift(fshift)
+                img_back = cv2.idft(f_ishift)
+                img_back = cv2.magnitude(img_back[:, :, 0], img_back[:, :, 1])
+
+                # Normalisasi gambar hasil
+                img_back = cv2.normalize(img_back, None, 0, 255, cv2.NORM_MINMAX)
+                img_back = np.uint8(img_back)
+
+                # Tampilkan hasil
+                self.display_image_in_view(img_back)
+
+                # Simpan hasil ke self.processed_image
+                self.processed_image = img_back
+            except Exception as e:
+                QtWidgets.QMessageBox.warning(self, "Warning", "An error occurred during bandstop filtering.")
+                print(f"Error in bandstop_filter: {e}")
+        else:
+            QtWidgets.QMessageBox.warning(self, "Warning", "Please open an image first.")
+    
     def region_growing(self):
         seed_point = (50, 50)  # Atur nilai seed_point yang dipilih
         threshold = 30  # Atur nilai threshold yang diinginkan
@@ -1023,6 +1172,100 @@ class MyWindow(QtWidgets.QMainWindow):
         else:
             QtWidgets.QMessageBox.warning(self, "Warning", "Please open or process an image first.")
             
+    def citra_warna_rgb(self):
+        if self.processed_image is not None:
+            try:
+                # Cek apakah gambar memiliki 3 channel (RGB/BGR)
+                if len(self.processed_image.shape) == 3:
+                    # Pisahkan channel R, G, B
+                    blue, green, red = cv2.split(self.processed_image)
+
+                    # Tampilkan citra inputan asli di graphicsView
+                    self.display_image_in_view(self.processed_image, self.graphicsView)
+
+                    # Hitung intensitas rata-rata masing-masing channel
+                    red_mean = np.mean(red)
+                    green_mean = np.mean(green)
+                    blue_mean = np.mean(blue)
+
+                    # Buat pop-up untuk menampilkan informasi intensitas rata-rata masing-masing channel
+                    rgb_info = f"Red Channel Mean: {red_mean:.2f}\nGreen Channel Mean: {green_mean:.2f}\nBlue Channel Mean: {blue_mean:.2f}"
+                    QtWidgets.QMessageBox.information(self, "RGB Channel Information", rgb_info)
+
+                    # Simpan hasil ke Excel
+                    data_rgb = {'Channel': ['Red', 'Green', 'Blue'],
+                                'Mean Intensity': [red_mean, green_mean, blue_mean]}
+                    df_rgb = pd.DataFrame(data_rgb)
+
+                    # Tentukan folder penyimpanan
+                    folder = "hasil_rgb_glcm"
+                    os.makedirs(folder, exist_ok=True)  # Buat folder jika belum ada
+                    file_path = os.path.join(folder, "rgb_analysis.xlsx")
+
+                    # Simpan DataFrame ke file Excel
+                    df_rgb.to_excel(file_path, index=False)
+                    QtWidgets.QMessageBox.information(self, "Save Successful", f"RGB analysis saved to {file_path}")
+
+                else:
+                    QtWidgets.QMessageBox.warning(self, "Warning", "Input image is not in RGB format.")
+
+            except Exception as e:
+                print(f"Error in extract_rgb_channels: {e}")
+                QtWidgets.QMessageBox.warning(self, "Error", f"RGB channel extraction failed: {e}")
+        else:
+            QtWidgets.QMessageBox.warning(self, "Warning", "Please open or process an image first.")
+
+    def tekstur_dengan_glcm(self):
+        if self.processed_image is not None:
+            try:
+                # Cek apakah gambar sudah grayscale
+                if len(self.processed_image.shape) == 3:
+                    gray = cv2.cvtColor(self.processed_image, cv2.COLOR_BGR2GRAY)
+                else:
+                    gray = self.processed_image
+
+                # Tampilkan citra grayscale di graphicsView
+                self.display_image_in_view(gray, self.graphicsView)
+
+                # Menghitung GLCM (Gray Level Co-occurrence Matrix)
+                glcm = skft.greycomatrix(gray, distances=[1], angles=[0], levels=256, symmetric=True, normed=True)
+
+                # Ekstraksi fitur GLCM (contrast, dissimilarity, homogeneity, energy, correlation)
+                contrast = skft.greycoprops(glcm, 'contrast')[0, 0]
+                dissimilarity = skft.greycoprops(glcm, 'dissimilarity')[0, 0]
+                homogeneity = skft.greycoprops(glcm, 'homogeneity')[0, 0]
+                energy = skft.greycoprops(glcm, 'energy')[0, 0]
+                correlation = skft.greycoprops(glcm, 'correlation')[0, 0]
+
+                # Menampilkan hasil GLCM di pop-up
+                glcm_info = (f"GLCM Features:\n\n"
+                            f"Contrast: {contrast:.2f}\n"
+                            f"Dissimilarity: {dissimilarity:.2f}\n"
+                            f"Homogeneity: {homogeneity:.2f}\n"
+                            f"Energy: {energy:.2f}\n"
+                            f"Correlation: {correlation:.2f}")
+                QtWidgets.QMessageBox.information(self, "GLCM Texture Analysis", glcm_info)
+
+                # Simpan hasil ke Excel
+                data_glcm = {'Feature': ['Contrast', 'Dissimilarity', 'Homogeneity', 'Energy', 'Correlation'],
+                            'Value': [contrast, dissimilarity, homogeneity, energy, correlation]}
+                df_glcm = pd.DataFrame(data_glcm)
+
+                # Tentukan folder penyimpanan
+                folder = "hasil_rgb_glcm"
+                os.makedirs(folder, exist_ok=True)  # Buat folder jika belum ada
+                file_path = os.path.join(folder, "glcm_analysis.xlsx")
+
+                # Simpan DataFrame ke file Excel
+                df_glcm.to_excel(file_path, index=False)
+                QtWidgets.QMessageBox.information(self, "Save Successful", f"GLCM analysis saved to {file_path}")
+
+            except Exception as e:
+                print(f"Error in extract_texture_glcm: {e}")
+                QtWidgets.QMessageBox.warning(self, "Error", f"GLCM extraction failed: {e}")
+        else:
+            QtWidgets.QMessageBox.warning(self, "Warning", "Please open or process an image first.")
+            
     def clear_output(self):
         """Hanya menghapus konten di graphicsView_2."""
         scene = QtWidgets.QGraphicsScene()  # Membuat scene baru yang kosong
@@ -1062,7 +1305,11 @@ class MyWindow(QtWidgets.QMainWindow):
         tentang_dialog = QtWidgets.QDialog()
         uic.loadUi('Tentang.ui', tentang_dialog)
         tentang_dialog.exec_()  # Display the 'Tentang' dialog
-
+        
+    def show_arithmetical_dialog(self):
+        self.arithmetical_window = ArithmeticalWindow()
+        self.arithmetical_window.show()
+        
     def set_bit_depth(self, bit_depth):
         self.bit_depth = bit_depth
 

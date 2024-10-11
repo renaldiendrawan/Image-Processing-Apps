@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1074</width>
-    <height>602</height>
+    <width>1385</width>
+    <height>587</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -57,9 +57,9 @@
    <widget class="QTextEdit" name="textEdit">
     <property name="geometry">
      <rect>
-      <x>170</x>
+      <x>140</x>
       <y>90</y>
-      <width>181</width>
+      <width>261</width>
       <height>41</height>
      </rect>
     </property>
@@ -67,16 +67,16 @@
      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt; font-weight:600;&quot;&gt;Gambar Asli&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;Gambar Asli&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QTextEdit" name="textEdit_2">
     <property name="geometry">
      <rect>
-      <x>640</x>
+      <x>620</x>
       <y>90</y>
-      <width>331</width>
+      <width>411</width>
       <height>41</height>
      </rect>
     </property>
@@ -84,8 +84,8 @@ p, li { white-space: pre-wrap; }
      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;justify&quot; style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt; font-weight:600;&quot;&gt;Gambar Hasil Pemrosesan&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;Gambar Hasil Pemrosesan&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
   </widget>
@@ -94,8 +94,8 @@ p, li { white-space: pre-wrap; }
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1074</width>
-     <height>21</height>
+     <width>1385</width>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -176,7 +176,7 @@ p, li { white-space: pre-wrap; }
    </widget>
    <widget class="QMenu" name="menuTentang">
     <property name="title">
-     <string>Tentang</string>
+     <string>About</string>
     </property>
     <addaction name="actionTentang_Aplikasi"/>
    </widget>
@@ -188,9 +188,15 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionFuzzy_HE_RGB"/>
     <addaction name="actionFuzzy_Grayscale"/>
    </widget>
-   <widget class="QMenu" name="menuAritmetical_Operation">
+   <widget class="QMenu" name="menuArithmeticalOperation">
     <property name="title">
-     <string>Aritmetical Operation</string>
+     <string>Arithmetical Operation</string>
+    </property>
+    <addaction name="actionArithmetical_Operation"/>
+   </widget>
+   <widget class="QMenu" name="menuTransformasi_Geometrik">
+    <property name="title">
+     <string>Geometric Transformation</string>
     </property>
     <addaction name="actionTranslate_Image"/>
     <addaction name="actionRotate_Image"/>
@@ -206,9 +212,9 @@ p, li { white-space: pre-wrap; }
      <property name="title">
       <string>Edge Detection</string>
      </property>
-     <addaction name="actionEdge_Detection_1"/>
-     <addaction name="actionEdge_Detection_2"/>
-     <addaction name="actionEdge_Detection_3"/>
+     <addaction name="actionSobel"/>
+     <addaction name="actionPrewitt"/>
+     <addaction name="actionCanny"/>
     </widget>
     <widget class="QMenu" name="menuGaussian_Blur">
      <property name="title">
@@ -227,14 +233,6 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionHeigh_Pass_Filter"/>
     <addaction name="actionBandstop_Filter"/>
    </widget>
-   <widget class="QMenu" name="menuEdge_Detection">
-    <property name="title">
-     <string>Edge Detection</string>
-    </property>
-    <addaction name="actionSobel"/>
-    <addaction name="actionPrewitt"/>
-    <addaction name="actionCanny"/>
-   </widget>
    <widget class="QMenu" name="menuSegmentation">
     <property name="title">
      <string>Segmentation</string>
@@ -247,7 +245,7 @@ p, li { white-space: pre-wrap; }
    </widget>
    <widget class="QMenu" name="menuMorfologi">
     <property name="title">
-     <string>Morfologi</string>
+     <string>Morphology</string>
     </property>
     <addaction name="actionErosion"/>
     <addaction name="actionDilation"/>
@@ -267,22 +265,30 @@ p, li { white-space: pre-wrap; }
    </widget>
    <widget class="QMenu" name="menuKonvolusi">
     <property name="title">
-     <string>Konvolusi</string>
+     <string>Convolution</string>
     </property>
     <addaction name="actionManual"/>
     <addaction name="actionOpenCV"/>
+   </widget>
+   <widget class="QMenu" name="menuExtraction">
+    <property name="title">
+     <string>Extraction</string>
+    </property>
+    <addaction name="actionCitraWarnaRGB"/>
+    <addaction name="actionTeksturdenganGLCM"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
    <addaction name="menuColors"/>
    <addaction name="menuTentang"/>
    <addaction name="menuImage_Processing"/>
-   <addaction name="menuAritmetical_Operation"/>
+   <addaction name="menuArithmeticalOperation"/>
+   <addaction name="menuTransformasi_Geometrik"/>
    <addaction name="menuFilter"/>
-   <addaction name="menuEdge_Detection"/>
    <addaction name="menuSegmentation"/>
    <addaction name="menuMorfologi"/>
    <addaction name="menuKonvolusi"/>
+   <addaction name="menuExtraction"/>
    <addaction name="menuClear"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -441,6 +447,11 @@ p, li { white-space: pre-wrap; }
     <string>Fuzzy Grayscale</string>
    </property>
   </action>
+  <action name="actionArithmetical_Operation">
+   <property name="text">
+    <string>Arithmetical Operation</string>
+   </property>
+  </action>
   <action name="actionTranslate_Image">
    <property name="text">
     <string>Translate Image</string>
@@ -536,19 +547,19 @@ p, li { white-space: pre-wrap; }
     <string>Identity</string>
    </property>
   </action>
-  <action name="actionEdge_Detection_1">
+  <action name="actionSobel">
    <property name="text">
-    <string>Edge Detection 1</string>
+    <string>Sobel</string>
    </property>
   </action>
-  <action name="actionEdge_Detection_2">
+  <action name="actionPrewitt">
    <property name="text">
-    <string>Edge Detection 2</string>
+    <string>Prewitt</string>
    </property>
   </action>
-  <action name="actionEdge_Detection_3">
+  <action name="actionCanny">
    <property name="text">
-    <string>Edge Detection 3</string>
+    <string>Canny</string>
    </property>
   </action>
   <action name="actionSharpen">
@@ -591,21 +602,6 @@ p, li { white-space: pre-wrap; }
     <string>Bandstop Filter </string>
    </property>
   </action>
-  <action name="actionSobel">
-   <property name="text">
-    <string>Sobel</string>
-   </property>
-  </action>
-  <action name="actionPrewitt">
-   <property name="text">
-    <string>Prewitt</string>
-   </property>
-  </action>
-  <action name="actionCanny">
-   <property name="text">
-    <string>Canny</string>
-   </property>
-  </action>
   <action name="actionManual">
    <property name="text">
     <string>Manual</string>
@@ -634,6 +630,16 @@ p, li { white-space: pre-wrap; }
   <action name="actionHistogram_Image">
    <property name="text">
     <string>Histogram Image</string>
+   </property>
+  </action>
+  <action name="actionCitraWarnaRGB">
+   <property name="text">
+    <string>Citra Warna RGB</string>
+   </property>
+  </action>
+  <action name="actionTeksturdenganGLCM">
+   <property name="text">
+    <string>Tekstur dengan GLCM</string>
    </property>
   </action>
   <action name="actionClearOutput">
