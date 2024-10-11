@@ -1097,9 +1097,17 @@ class MyWindow(QtWidgets.QMainWindow):
                     green_mean = np.mean(green)
                     blue_mean = np.mean(blue)
 
+                    # Ambil nama file gambar yang sedang diproses (optional, jika ada properti untuk menyimpan nama file)
+                    if hasattr(self, 'image_file_name'):
+                        image_name = self.image_file_name
+                    else:
+                        image_name = "Unnamed Image"
+
                     # Siapkan data untuk ditulis
-                    data_rgb = {'Channel': ['Red', 'Green', 'Blue'],
-                                'Mean Intensity': [red_mean, green_mean, blue_mean]}
+                    data_rgb = {'File Name': [image_name],
+                                'Red': [red_mean],
+                                'Green': [green_mean],
+                                'Blue': [blue_mean]}
                     df_rgb = pd.DataFrame(data_rgb)
 
                     # Tentukan folder penyimpanan
@@ -1155,6 +1163,12 @@ class MyWindow(QtWidgets.QMainWindow):
                 # Ekstraksi fitur GLCM
                 contrast, homogeneity, energy, correlation = extract_glcm_features(img_gray)
 
+                # Ambil nama file gambar yang sedang diproses (optional, jika ada properti untuk menyimpan nama file)
+                if hasattr(self, 'image_file_name'):
+                    image_name = self.image_file_name
+                else:
+                    image_name = "Unnamed Image"
+
                 # Tentukan folder output (hasil_rgb_glcm)
                 output_folder = 'hasil_rgb_glcm'
                 os.makedirs(output_folder, exist_ok=True)  # Buat folder jika belum ada
@@ -1163,8 +1177,8 @@ class MyWindow(QtWidgets.QMainWindow):
                 output_path = os.path.join(output_folder, 'glcm_analysis.xlsx')
 
                 # Buat dataframe untuk hasil ekstraksi
-                new_data = pd.DataFrame([['Processed Image', contrast, homogeneity, energy, correlation]], 
-                                        columns=['Nama', 'Kontras', 'Homogenitas', 'Energi', 'Korelasi'])
+                new_data = pd.DataFrame([[image_name, contrast, homogeneity, energy, correlation]], 
+                                        columns=['Nama File', 'Kontras', 'Homogenitas', 'Energi', 'Korelasi'])
 
                 # Cek apakah file Excel sudah ada
                 if os.path.exists(output_path):
